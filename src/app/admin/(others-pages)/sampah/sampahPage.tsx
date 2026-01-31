@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from 'sonner'
 import Image from 'next/image';
-import { AlertCircleIcon, EditIcon, LucideMessageSquareWarning, Plus, TrashIcon, X } from 'lucide-react'
+import { AlertCircleIcon, EditIcon, ImagePlus, LucideMessageSquareWarning, Plus, TrashIcon, X } from 'lucide-react'
 
 import Button from '@/components/ui/button/Button';
 import { Modal } from '@/components/ui/modal';
@@ -17,6 +17,8 @@ import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
 import { useModal } from '@/hooks/useModal';
 import { createSampah, updateSampah, deleteSampah } from './action';
+import Select from '@/components/form/Select';
+import { ChevronDownIcon } from '@/icons';
 
 interface Sampah {
     id: number;
@@ -37,6 +39,10 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
     const [selectedNasabah, setSelectedNasabah] = useState<Sampah | null>(null);
     const [selectDeletedNasabah, setDeletedNasabah] = useState<Sampah | null>(null);
     const [isPending, startTransition] = useTransition();
+
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    const [selectedSatuan, setSelectedSatuan] = useState<string>("kg");
 
     useEffect(() => {
         setDisplayData(data);
@@ -120,6 +126,43 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
         });
     };
 
+    // Image handler
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Buat URL sementara dari file local biar bisa tampil
+            const objectUrl = URL.createObjectURL(file);
+            setImagePreview(objectUrl);
+        }
+    };
+
+    // Update Preview saat Modal dibuka (Reset atau Isi data lama)
+    useEffect(() => {
+        if (isOpen) {
+            if (selectedNasabah?.foto_sampah) {
+                setImagePreview(selectedNasabah.foto_sampah);
+                setSelectedSatuan(selectedNasabah.satuan);
+            } else {
+                setImagePreview(null);
+                setSelectedSatuan("kg");
+            }
+        } else {
+            // Bersihkan preview saat modal tutup biar gak ada 'hantu' gambar sebelumnya
+            setImagePreview(null);
+        }
+    }, [isOpen, selectedNasabah]);
+
+      const satuanOption = [
+    { value: "kg", label: "Kg" },
+    { value: "gram", label: "Gram" },
+    { value: "lt", label: "Liter" },
+  ];
+
+    const handleSelectChange = (value: string) => {
+    setSelectedSatuan(value);
+
+  };
+
     return (
         <>
             <section className='p-5 rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3'>
@@ -186,14 +229,12 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                         <div className=" bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
                             <div className="">
                                 <div className="w-full">
-
-                                    {/* Table Body */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                                         {displayData?.map((order) => (
                                             <>
                                                 <div key={order.id} className="w-full h-[10rem] flex shadow-xl border-gray-200 dark:border-white/5 rounded-2xl overflow-hidden ">
-                                                    <Image src={order.foto_sampah} alt={order.nama_sampah} width={300} height={300} className="rounded-md max-w-[10rem] h-full object-cover" />
-                                                    <div className="w-full p-2 flex flex-col justify-between">
+                                                    <Image src={order.foto_sampah} alt={order.nama_sampah} width={300} height={300} className="rounded-md rounded-r-none max-w-[10rem] h-full object-cover" />
+                                                    <div className="w-full p-2 px-5 flex flex-col justify-between">
                                                         <div>
                                                             <h2
                                                                 className="text-sm font-semibold text-gray-800 dark:text-white/90">
@@ -216,7 +257,7 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                                                                 className='main-button-danger py-1!'
                                                                 onClick={() => handleDeleteModal(order)}
                                                             >
-                                                              
+
                                                                 <TrashIcon className='size-5' />
                                                             </button>
                                                         </div>
@@ -224,38 +265,6 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                                                     </div>
                                                 </div>
                                             </>
-
-                                            // <TableRow key={order.id}>
-                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                            //         {order.nama_sampah}
-                                            //     </TableCell>
-                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                            //         {order.foto_sampah}
-                                            //     </TableCell>
-                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                            //         <img src={order.foto_sampah} alt="Foto Sampah" className="w-16 h-16 object-cover rounded-md" />
-                                            //     </TableCell>
-                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                            //         {order.harga_per_satuan} / {order.satuan}
-                                            //     </TableCell>
-                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start flex gap-3 flex-wrap">
-                                            //         <button
-                                            //             className='main-button rounded-full! p-3!'
-                                            //             onClick={() => handleEdit(order)}
-                                            //         >
-
-                                            //             <EditIcon className='size-5' />
-                                            //         </button>
-                                            //         <button
-                                            //             className='main-button-danger rounded-full! p-3!'
-                                            //             onClick={() => handleDeleteModal(order)}
-                                            //         >
-
-                                            //             <TrashIcon className='size-5' />
-                                            //         </button>
-                                            //     </TableCell>
-                                            // </TableRow>
-
                                         ))}
                                     </div>
 
@@ -349,48 +358,91 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                         </div>
 
                         <form action={clientAction} className="px-6 py-3 flex flex-col">
-                            <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                            <div className="flex gap-5">
                                 {/* ID Hidden jika sedang edit */}
                                 {selectedNasabah && <input type="hidden" name="id" value={selectedNasabah.id} />}
+                                <div className='w-1/2 h-full'>
+                                    <Label>Foto Sampah</Label>
+                                    <label
+                                        htmlFor="dropzone-file"
+                                        className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-2xl cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 transition-colors relative overflow-hidden ${imagePreview ? 'border-primary/50' : 'border-gray-300'}`}
+                                    >
+                                        {imagePreview ? (
+                                            // TAMPILAN JIKA ADA PREVIEW
+                                            <>
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Preview"
+                                                    className="absolute inset-0 w-full h-full object-cover p-2 rounded-2xl"
+                                                />
+                                                <div className="absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                    <p className="text-white font-medium flex items-center gap-2">
+                                                        <ImagePlus className="size-24" />
+                                                    </p>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            // TAMPILAN JIKA KOSONG
+                                            <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
+                                                <ImagePlus className="size-24 text-primary" />
+                                            </div>
+                                        )}
 
-                                <div>
-                                    <Label>Nama</Label>
-                                    <Input
-                                        type="text"
-                                        name="nama_sampah"
-                                        defaultValue={selectedNasabah?.nama_sampah || ''}
-                                        placeholder='Nama Sampah...'
-                                    />
+                                        {/* INPUT ASLINYA DISEMBUYIKAN */}
+                                        <input
+                                            id="dropzone-file"
+                                            type="file"
+                                            name="foto_sampah"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                        />
+                                    </label>
                                 </div>
-                                <div>
-                                    <Label>Harga</Label>
-                                    <Input
-                                        type="text"
-                                        name="harga_per_satuan"
-                                        defaultValue={selectedNasabah?.harga_per_satuan || ''}
-                                        placeholder='Harga Per Satuan Sampah...'
-                                    />
-                                </div>
-                                <div>
-                                    <Label>Satuan</Label>
-                                    <Input
-                                        type="text"
-                                        name="satuan"
-                                        defaultValue={selectedNasabah?.satuan || ''}
-                                        placeholder='Satuan Sampah...'
-                                    />
-                                </div>
-                                <div>
-                                    <Label>Foto Sampah (Opsional)</Label>
-                                    <Input
-                                        type="file"
-                                        name="foto_sampah"
-                                        className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
-                                    />
+                                <div className="flex flex-col w-1/2 gap-4">
+                                    <div>
+                                        <Label>Nama</Label>
+                                        <Input
+                                            type="text"
+                                            name="nama_sampah"
+                                            defaultValue={selectedNasabah?.nama_sampah || ''}
+                                            placeholder='Nama Sampah...'
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label>Harga</Label>
+                                        <Input
+                                            type="text"
+                                            name="harga_per_satuan"
+                                            defaultValue={selectedNasabah?.harga_per_satuan || ''}
+                                            placeholder='Harga Sampah...'
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label>Satuan</Label>
+                                        <Input
+                                            type="hidden"
+                                            name="satuan"
+                                            defaultValue={selectedSatuan || ''}
+                                        />
+                                        <div>
+                                            <div className="relative">
+                                                <Select
+                                                    options={satuanOption}
+                                                    placeholder="Pilih Satuan"
+                                                    onChange={handleSelectChange}
+                                                    className="dark:bg-dark-900"
+                                                    defaultValue={selectedSatuan}
+
+                                                />
+                                                <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                                                    <ChevronDownIcon />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-
                             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
                                 <button className="main-button flex" type='submit' disabled={isPending}>
                                     {isPending ? (
@@ -401,7 +453,7 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                                     ) : (
                                         <>
                                             {selectedNasabah ? 'Simpan Perubahan' : 'Tambah Sampah'}
-                                            <Plus className='size-4' />
+                                            {selectedNasabah ? <EditIcon className='size-4' /> : <Plus className='size-4' />}
                                         </>
                                     )}
 

@@ -17,8 +17,8 @@ export default async function page() {
     }
 
     return (
-        <>
+     
             <SampahPage data={data || []} />
-        </>
+
     )
 }
