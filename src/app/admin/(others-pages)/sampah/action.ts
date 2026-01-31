@@ -75,6 +75,7 @@ export async function updateSampah(formData: FormData, id: number) {
     nama_sampah: formData.get('nama_sampah') as string,
     harga_per_satuan: formData.get('harga_per_satuan') as string,
     satuan: formData.get('satuan') as string,
+    foto_sampah: formData.get('foto_sampah') as File,
   }
 
   // Validasi simpel (biar gak kosong melompong)
@@ -82,13 +83,37 @@ export async function updateSampah(formData: FormData, id: number) {
     throw new Error("Nama dan Harga Per Satuan wajib diisi!")
   }
 
+  const updateData: any = {
+    nama_sampah: rawFormData.nama_sampah,
+    harga_per_satuan: rawFormData.harga_per_satuan,
+    satuan: rawFormData.satuan,
+    foto_sampah: rawFormData.foto_sampah
+  }
+
+  if (rawFormData.foto_sampah && rawFormData.foto_sampah.size > 0) {
+    const fileName = generateFileName(rawFormData.foto_sampah.name)
+
+    // 1. Upload foto baru
+    const { error: uploadError } = await supabase.storage
+      .from('foto_sampah')
+      .upload(fileName, rawFormData.foto_sampah)
+
+    if (uploadError) return { success: false, message: "Gagal upload foto baru" }
+
+    // 2. Dapatkan URL baru
+    const { data: urlData } = supabase.storage
+      .from('foto_sampah')
+      .getPublicUrl(fileName)
+
+    updateData.foto_sampah = urlData.publicUrl // Update URL di object data
+
+    // (Opsional) Hapus foto lama biar hemat storage?
+    // Kamu perlu query dulu data lama buat dapet nama filenya kalau mau hapus.
+  }
+
   const { error } = await supabase
     .from('sampah')
-    .update({
-      nama_sampah: rawFormData.nama_sampah,
-      harga_per_satuan: rawFormData.harga_per_satuan,
-      satuan: rawFormData.satuan
-    })
+    .update(updateData)
     .eq('id', id)
 
   if (error) {

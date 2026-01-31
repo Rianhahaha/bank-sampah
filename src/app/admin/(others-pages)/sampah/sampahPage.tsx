@@ -103,6 +103,7 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
         setDisplayData(data);
     }
     const clientAction = async (formData: FormData) => {
+        const namaInput = formData.get('nama_sampah') as string;
         startTransition(async () => {
             // Jalankan action dan tangkap return-nya
             const result = selectedNasabah
@@ -111,11 +112,11 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
 
             // Sekarang kita bisa pakai return-nya buat Toast
             if (result.success) {
-                const sampah = selectedNasabah?.nama_sampah
+                // const sampah = selectedNasabah?.nama_sampah
                 toast.success(
                     selectedNasabah
-                        ? `Sampah ${sampah} berhasil diperbarui!`
-                        : `Sampah ${sampah} berhasil ditambahkan!`
+                        ? `Sampah ${namaInput} berhasil diperbarui!`
+                        : `Sampah ${namaInput} berhasil ditambahkan!`
                 );
                 closeModal();
 
@@ -152,16 +153,16 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
         }
     }, [isOpen, selectedNasabah]);
 
-      const satuanOption = [
-    { value: "kg", label: "Kg" },
-    { value: "gram", label: "Gram" },
-    { value: "lt", label: "Liter" },
-  ];
+    const satuanOption = [
+        { value: "kg", label: "Kg" },
+        { value: "gram", label: "Gram" },
+        { value: "lt", label: "Liter" },
+    ];
 
     const handleSelectChange = (value: string) => {
-    setSelectedSatuan(value);
+        setSelectedSatuan(value);
 
-  };
+    };
 
     return (
         <>
@@ -231,40 +232,43 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                                 <div className="w-full">
                                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                                         {displayData?.map((order) => (
-                                            <>
-                                                <div key={order.id} className="w-full h-[10rem] flex shadow-xl border-gray-200 dark:border-white/5 rounded-2xl overflow-hidden ">
-                                                    <Image src={order.foto_sampah} alt={order.nama_sampah} width={300} height={300} className="rounded-md rounded-r-none max-w-[10rem] h-full object-cover" />
-                                                    <div className="w-full p-2 px-5 flex flex-col justify-between">
-                                                        <div>
-                                                            <h2
-                                                                className="text-sm font-semibold text-gray-800 dark:text-white/90">
-                                                                {order.nama_sampah}
-                                                            </h2>
-                                                            <h2
-                                                                className="text-xl font-bold text-primary">
-                                                                Rp.{order.harga_per_satuan} / {order.satuan}
-                                                            </h2>
-                                                            <p className="text-xs text-gray-500 dark:text-white/50">Dibuat Pada : {new Date(order.created_at).toLocaleDateString()}</p>
-                                                        </div>
-                                                        <div className='w-full flex justify-end gap-2'>
-                                                            <button
-                                                                className='main-button py-1!'
-                                                                onClick={() => handleEdit(order)}
-                                                            >
-                                                                <EditIcon className='size-5' />
-                                                            </button>
-                                                            <button
-                                                                className='main-button-danger py-1!'
-                                                                onClick={() => handleDeleteModal(order)}
-                                                            >
 
-                                                                <TrashIcon className='size-5' />
-                                                            </button>
-                                                        </div>
-
+                                            <div key={order.id} className="w-full h-[10rem] flex shadow-xl border-gray-200 dark:border-white/5 rounded-2xl overflow-hidden ">
+                                                <Image src={order.foto_sampah && order.foto_sampah.startsWith('http')
+                                                    ? order.foto_sampah
+                                                    : '/default-placeholder.png'} // Sediakan file ini di folder public/
+                                                    alt={order.nama_sampah} width={300} height={300} className="rounded-md rounded-r-none max-w-[10rem] h-full object-cover" />
+                                                <div className="w-full p-2 px-5 flex flex-col justify-between">
+                                                    <div>
+                                                        <h2
+                                                            className="text-sm font-semibold text-gray-800 dark:text-white/90">
+                                                            {order.nama_sampah}
+                                                        </h2>
+                                                        <h2
+                                                            className="text-xl font-bold text-primary">
+                                                            Rp.{order.harga_per_satuan} / {order.satuan}
+                                                        </h2>
+                                                        <p className="text-xs text-gray-500 dark:text-white/50">Dibuat Pada : {new Date(order.created_at).toLocaleDateString()}</p>
                                                     </div>
+                                                    <div className='w-full flex justify-end gap-2'>
+                                                        <button
+                                                            className='main-button py-1!'
+                                                            onClick={() => handleEdit(order)}
+                                                        >
+                                                            <EditIcon className='size-5' />
+                                                        </button>
+                                                        <button
+                                                            className='main-button-danger py-1!'
+                                                            onClick={() => handleDeleteModal(order)}
+                                                        >
+
+                                                            <TrashIcon className='size-5' />
+                                                        </button>
+                                                    </div>
+
                                                 </div>
-                                            </>
+                                            </div>
+
                                         ))}
                                     </div>
 
