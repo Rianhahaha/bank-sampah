@@ -8,7 +8,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { toast } from 'sonner'
-
+import Image from 'next/image';
 import { AlertCircleIcon, EditIcon, LucideMessageSquareWarning, Plus, TrashIcon, X } from 'lucide-react'
 
 import Button from '@/components/ui/button/Button';
@@ -16,34 +16,26 @@ import { Modal } from '@/components/ui/modal';
 import Label from '@/components/form/Label';
 import Input from '@/components/form/input/InputField';
 import { useModal } from '@/hooks/useModal';
-import { createNasabah, updateNasabah, deleteNasabah } from './action';
+import { createSampah, updateSampah, deleteSampah } from './action';
 
-interface Nasabah {
+interface Sampah {
     id: number;
-    nama: string;
-    alamat: string;
+    nama_sampah: string;
+    foto_sampah: string;
     rt: string;
-    saldo: number;
+    harga_per_satuan: number;
+    satuan: string;
+    created_at: string;
 }
-// Dummy Data
-const tableData: Nasabah[] = [
-    {
-        id: 1,
-        nama: 'Triandi',
-        alamat: 'Nglengis, Sitimulyo, Piyungan, Bantul',
-        rt: '12',
-        saldo: 0,
-    },
-];
 
-export default function SampahPage({ data }: { data: Nasabah[] }) {
+export default function SampahPage({ data }: { data: Sampah[] }) {
 
     const { isOpen, openModal, closeModal } = useModal();
     const { isOpen: isDeleteModalOpen, openModal: openDeleteModal, closeModal: closeDeleteModal } = useModal();
     const [searchTerm, setSearchTerm] = useState("");
-    const [displayData, setDisplayData] = useState<Nasabah[]>(data);
-    const [selectedNasabah, setSelectedNasabah] = useState<Nasabah | null>(null);
-    const [selectDeletedNasabah, setDeletedNasabah] = useState<Nasabah | null>(null);
+    const [displayData, setDisplayData] = useState<Sampah[]>(data);
+    const [selectedNasabah, setSelectedNasabah] = useState<Sampah | null>(null);
+    const [selectDeletedNasabah, setDeletedNasabah] = useState<Sampah | null>(null);
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
@@ -51,8 +43,8 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
     }, [data]);
 
     // Fungsi untuk handle klik edit
-    const handleEdit = (nasabah: Nasabah) => {
-        setSelectedNasabah(nasabah);
+    const handleEdit = (sampah: Sampah) => {
+        setSelectedNasabah(sampah);
         openModal();
     };
 
@@ -62,8 +54,8 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
         openModal();
     };
 
-    const handleDeleteModal = (nasabah: Nasabah) => {
-        setDeletedNasabah(nasabah);
+    const handleDeleteModal = (sampah: Sampah) => {
+        setDeletedNasabah(sampah);
         openDeleteModal();
     }
 
@@ -71,12 +63,12 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
     const handleDelete = () => {
         startTransition(async () => {
             if (!selectDeletedNasabah) return;
-            const result = await deleteNasabah(selectDeletedNasabah.id);
+            const result = await deleteSampah(selectDeletedNasabah.id);
 
             if (result.success) {
-                const nasabah = selectDeletedNasabah?.nama
+                const sampah = selectDeletedNasabah?.nama_sampah
 
-                toast.error(`Nasabah ${nasabah} berhasil dihapus!`);
+                toast.error(`Sampah ${sampah} berhasil dihapus!`);
                 closeDeleteModal();
             } else {
                 toast.error(result.message);
@@ -93,13 +85,12 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
         }
 
         // Lakukan filter dari data asli (props 'data')
-        const filtered = data.filter((nasabah) =>
-            nasabah.nama.toLowerCase().includes(searchTerm.toLowerCase())
+        const filtered = data.filter((sampah) =>
+            sampah.nama_sampah.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
         // Update data yang tampil di tabel
         setDisplayData(filtered);
-        console.log("Hasil Filter:", filtered);
     }
     const handleFilterReset = () => {
         setSearchTerm("");
@@ -109,16 +100,16 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
         startTransition(async () => {
             // Jalankan action dan tangkap return-nya
             const result = selectedNasabah
-                ? await updateNasabah(formData, selectedNasabah.id)
-                : await createNasabah(formData);
+                ? await updateSampah(formData, selectedNasabah.id)
+                : await createSampah(formData);
 
             // Sekarang kita bisa pakai return-nya buat Toast
             if (result.success) {
-                const nasabah = selectedNasabah?.nama
+                const sampah = selectedNasabah?.nama_sampah
                 toast.success(
                     selectedNasabah
-                        ? `Nasabah ${nasabah} berhasil diperbarui!`
-                        : `Nasabah ${nasabah} berhasil ditambahkan!`
+                        ? `Sampah ${sampah} berhasil diperbarui!`
+                        : `Sampah ${sampah} berhasil ditambahkan!`
                 );
                 closeModal();
 
@@ -140,13 +131,12 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                         Daftar Sampah
                     </h2>
 
-                    <div className="relative flex justify-between">
+                    <div className="relative flex justify-between flex-col sm:flex-row gap-3">
                         <div className='flex items-stretch'>
                             <div className='size-full relative'>
                                 {searchTerm && (
 
                                     <button className='absolute right-3 top-1/2 transform -translate-y-1/2 text-black/50 cursor-pointer z-30' onClick={handleFilterReset}>
-
                                         <X className='size-4 ' />
                                     </button>
                                 )}
@@ -160,7 +150,7 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                                 />
                             </div>
                             <button
-                                className="main-button rounded-l-none!"
+                                className="main-button rounded-l-none! py-0!"
                                 onClick={handleFilter}
                             >
                                 <svg
@@ -184,7 +174,7 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                             className="main-button flex "
                             onClick={handleAdd}
                         >
-                            Tambah Nasabah
+                            Tambah Sampah
                             <Plus className='size-4' />
                         </button>
                     </div>
@@ -193,84 +183,83 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                     <div className="text-center py-10">Data tidak Ditemukan</div>
                 ) : (
                     <>
-                        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-                            <div className="max-w-full overflow-x-auto">
-                                <div className="min-w-275.5">
-                                    <Table>
-                                        {/* Table Header */}
-                                        <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-                                            <tr>
-                                                <TableCell
-                                                    isHeader
-                                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                                                >
-                                                    Nama Nasabah
-                                                </TableCell>
-                                                <TableCell
-                                                    isHeader
-                                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                                                >
-                                                    Alamat
-                                                </TableCell>
-                                                <TableCell
-                                                    isHeader
-                                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                                                >
-                                                    RT
-                                                </TableCell>
-                                                <TableCell
-                                                    isHeader
-                                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                                                >
-                                                    Saldo
-                                                </TableCell>
-                                                <TableCell
-                                                    isHeader
-                                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                                                >
-                                                    Aksi
-                                                </TableCell>
-                                            </tr>
-                                        </TableHeader>
+                        <div className=" bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+                            <div className="">
+                                <div className="w-full">
 
-                                        {/* Table Body */}
+                                    {/* Table Body */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                                        {displayData?.map((order) => (
+                                            <>
+                                                <div key={order.id} className="w-full h-[10rem] flex shadow-xl border-gray-200 dark:border-white/5 rounded-2xl overflow-hidden ">
+                                                    <Image src={order.foto_sampah} alt={order.nama_sampah} width={300} height={300} className="rounded-md max-w-[10rem] h-full object-cover" />
+                                                    <div className="w-full p-2 flex flex-col justify-between">
+                                                        <div>
+                                                            <h2
+                                                                className="text-sm font-semibold text-gray-800 dark:text-white/90">
+                                                                {order.nama_sampah}
+                                                            </h2>
+                                                            <h2
+                                                                className="text-xl font-bold text-primary">
+                                                                Rp.{order.harga_per_satuan} / {order.satuan}
+                                                            </h2>
+                                                            <p className="text-xs text-gray-500 dark:text-white/50">Dibuat Pada : {new Date(order.created_at).toLocaleDateString()}</p>
+                                                        </div>
+                                                        <div className='w-full flex justify-end gap-2'>
+                                                            <button
+                                                                className='main-button py-1!'
+                                                                onClick={() => handleEdit(order)}
+                                                            >
+                                                                <EditIcon className='size-5' />
+                                                            </button>
+                                                            <button
+                                                                className='main-button-danger py-1!'
+                                                                onClick={() => handleDeleteModal(order)}
+                                                            >
+                                                              
+                                                                <TrashIcon className='size-5' />
+                                                            </button>
+                                                        </div>
 
-                                        <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                                            {displayData?.map((order) => (
-                                                <TableRow key={order.id}>
-                                                    <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                                        {order.nama}
-                                                    </TableCell>
-                                                    <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                                        {order.alamat}
-                                                    </TableCell>
-                                                    <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                                        {order.rt}
-                                                    </TableCell>
-                                                    <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                                        Rp {order.saldo?.toLocaleString('id-ID')}
-                                                    </TableCell>
-                                                    <TableCell className="px-5 py-4 sm:px-6 text-start flex gap-3 flex-wrap">
-                                                        <button
-                                                            className='main-button rounded-full! p-3!'
-                                                            onClick={() => handleEdit(order)}
-                                                        >
+                                                    </div>
+                                                </div>
+                                            </>
 
-                                                            <EditIcon className='size-5' />
-                                                        </button>
-                                                        <button
-                                                            className='main-button-danger rounded-full! p-3!'
-                                                            onClick={() => handleDeleteModal(order)}
-                                                        >
+                                            // <TableRow key={order.id}>
+                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start">
+                                            //         {order.nama_sampah}
+                                            //     </TableCell>
+                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start">
+                                            //         {order.foto_sampah}
+                                            //     </TableCell>
+                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start">
+                                            //         <img src={order.foto_sampah} alt="Foto Sampah" className="w-16 h-16 object-cover rounded-md" />
+                                            //     </TableCell>
+                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start">
+                                            //         {order.harga_per_satuan} / {order.satuan}
+                                            //     </TableCell>
+                                            //     <TableCell className="px-5 py-4 sm:px-6 text-start flex gap-3 flex-wrap">
+                                            //         <button
+                                            //             className='main-button rounded-full! p-3!'
+                                            //             onClick={() => handleEdit(order)}
+                                            //         >
 
-                                                            <TrashIcon className='size-5' />
-                                                        </button>
-                                                    </TableCell>
-                                                </TableRow>
+                                            //             <EditIcon className='size-5' />
+                                            //         </button>
+                                            //         <button
+                                            //             className='main-button-danger rounded-full! p-3!'
+                                            //             onClick={() => handleDeleteModal(order)}
+                                            //         >
 
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                            //             <TrashIcon className='size-5' />
+                                            //         </button>
+                                            //     </TableCell>
+                                            // </TableRow>
+
+                                        ))}
+                                    </div>
+
+
                                 </div>
                             </div>
                         </div>
@@ -283,7 +272,7 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                     <div className="relative w-full overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900">
                         <div className="flex px-6 py-3 bg-primary text-white justify-between items-center w-full border-gray-200 dark:border-white/5">
                             <div className="text-xl font-semibold ">
-                                {selectedNasabah ? 'Edit Nasabah' : 'Tambah Nasabah'}
+                                {selectedNasabah ? 'Edit Sampah' : 'Tambah Sampah'}
                             </div>
                             <button
                                 onClick={closeDeleteModal}
@@ -306,11 +295,11 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                             </button>
                         </div>
 
-                        <div  className="px-6 py-3 flex flex-col">
+                        <div className="px-6 py-3 flex flex-col">
                             <div className="text-center text-lg">
                                 <AlertCircleIcon className='size-10 mx-auto text-red-500 mb-3' />
-                                Apakah Anda yakin ingin menghapus nasabah atas nama <br></br><strong>{selectDeletedNasabah?.nama}?</strong>
-                                
+                                Apakah Anda yakin ingin menghapus <br></br><strong>{selectDeletedNasabah?.nama_sampah}?</strong>
+
                             </div>
                             <div className="flex items-center gap-3 px-2 mt-6 justify-end">
                                 <button className="main-button-danger flex" disabled={isPending} onClick={handleDelete}>
@@ -321,7 +310,7 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                                         </>
                                     ) : (
                                         <>
-                                           Hapus Nasabah
+                                            Hapus Sampah
                                             <TrashIcon className='size-4' />
                                         </>
                                     )}
@@ -336,7 +325,7 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                     <div className="relative w-full overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900">
                         <div className="flex px-6 py-3 bg-primary text-white justify-between items-center w-full border-gray-200 dark:border-white/5">
                             <div className="text-xl font-semibold ">
-                                {selectedNasabah ? 'Edit Nasabah' : 'Tambah Nasabah'}
+                                {selectedNasabah ? 'Edit Sampah' : 'Tambah Sampah'}
                             </div>
                             <button
                                 onClick={closeModal}
@@ -368,27 +357,35 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                                     <Label>Nama</Label>
                                     <Input
                                         type="text"
-                                        name="nama"
-                                        defaultValue={selectedNasabah?.nama || ''}
-                                        placeholder='Nama Nasabah...'
+                                        name="nama_sampah"
+                                        defaultValue={selectedNasabah?.nama_sampah || ''}
+                                        placeholder='Nama Sampah...'
                                     />
                                 </div>
                                 <div>
-                                    <Label>Alamat</Label>
+                                    <Label>Harga</Label>
                                     <Input
                                         type="text"
-                                        name="alamat"
-                                        defaultValue={selectedNasabah?.alamat || ''}
-                                        placeholder='Alamat Nasabah...'
+                                        name="harga_per_satuan"
+                                        defaultValue={selectedNasabah?.harga_per_satuan || ''}
+                                        placeholder='Harga Per Satuan Sampah...'
                                     />
                                 </div>
                                 <div>
-                                    <Label>RT</Label>
+                                    <Label>Satuan</Label>
                                     <Input
                                         type="text"
-                                        name="rt"
-                                        defaultValue={selectedNasabah?.rt || ''}
-                                        placeholder='RT Nasabah...'
+                                        name="satuan"
+                                        defaultValue={selectedNasabah?.satuan || ''}
+                                        placeholder='Satuan Sampah...'
+                                    />
+                                </div>
+                                <div>
+                                    <Label>Foto Sampah (Opsional)</Label>
+                                    <Input
+                                        type="file"
+                                        name="foto_sampah"
+                                        className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                                     />
                                 </div>
                             </div>
@@ -403,7 +400,7 @@ export default function SampahPage({ data }: { data: Nasabah[] }) {
                                         </>
                                     ) : (
                                         <>
-                                            {selectedNasabah ? 'Simpan Perubahan' : 'Tambah Nasabah'}
+                                            {selectedNasabah ? 'Simpan Perubahan' : 'Tambah Sampah'}
                                             <Plus className='size-4' />
                                         </>
                                     )}
