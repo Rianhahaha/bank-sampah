@@ -20,6 +20,7 @@ import {
   UserIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
+import { Banknote, LayoutGridIcon, Trash2Icon, UserCircle } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -30,19 +31,24 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: <GridIcon />,
+    icon: <LayoutGridIcon />,
     name: "Dashboard",
     path: "/admin",
   },
   {
-    icon: <UserIcon />,
+    icon: <UserCircle />,
     name: "Nasabah",
     path: "/admin/nasabah",
   },
   {
-    icon: <TrashBinIcon />,
+    icon: <Trash2Icon />,
     name: "Sampah",
     path: "/admin/sampah",
+  },
+  {
+    icon: <Banknote />,
+    name: "Transaksi",
+    path: "/admin/transaksi",
   },
   // {
   //   icon: <GridIcon />,
@@ -257,8 +263,13 @@ const AppSidebar: React.FC = () => {
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // const isActive = (path: string) => path === pathname;
-   const isActive = useCallback((path: string) => path === pathname, [pathname]);
+const isActive = useCallback((path: string) => {
 
+  if (path === "/admin") {
+    return pathname === "/admin";
+  }
+  return pathname === path || pathname.startsWith(`${path}/`);
+}, [pathname]);
   useEffect(() => {
     // Check if the current path matches any submenu item
     let submenuMatched = false;

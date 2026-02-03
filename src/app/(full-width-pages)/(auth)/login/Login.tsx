@@ -5,12 +5,29 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import { login } from "./action";
 
+import { toast } from "sonner";
+
+const initialState = {
+  message: '',
+  status: '',
+}
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [state, formAction] = useActionState(login, initialState)
+
+  useEffect(() => {
+    if(state.status === 'success'){
+      toast.success('Login berhasil! Mengalihkan ke dashboard...');
+    } else if(state.status === 'error'){
+      toast.error(state.message || 'Gagal login. Silakan coba lagi.');
+    }
+
+  }, [state])
+
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -85,7 +102,7 @@ export default function LoginPage() {
                 </span>
               </div>
             </div> */}
-            <form>
+            <form action={formAction}>
               <div className="space-y-6">
                 <div>
                   <Label>
@@ -131,9 +148,10 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <button
-                   className="main-button" 
-                   formAction={login}
-                   >
+                    className="main-button"
+                    type="submit"
+
+                  >
                     Masuk
                   </button>
                 </div>

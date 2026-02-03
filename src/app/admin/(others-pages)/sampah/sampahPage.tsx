@@ -1,12 +1,6 @@
 'use client'
 import React, { useEffect, useState, useTransition } from 'react'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { Sampah } from '@/types';
 import { toast } from 'sonner'
 import Image from 'next/image';
 import { AlertCircleIcon, EditIcon, ImagePlus, LucideMessageSquareWarning, Plus, TrashIcon, X } from 'lucide-react'
@@ -20,15 +14,7 @@ import { createSampah, updateSampah, deleteSampah } from './action';
 import Select from '@/components/form/Select';
 import { ChevronDownIcon } from '@/icons';
 
-interface Sampah {
-    id: number;
-    nama_sampah: string;
-    foto_sampah: string;
-    rt: string;
-    harga_per_satuan: number;
-    satuan: string;
-    created_at: string;
-}
+
 
 export default function SampahPage({ data }: { data: Sampah[] }) {
 
