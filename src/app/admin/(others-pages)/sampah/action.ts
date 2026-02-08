@@ -75,6 +75,7 @@ export async function updateSampah(formData: FormData, id: number) {
     nama_sampah: formData.get('nama_sampah') as string,
     harga_per_satuan: formData.get('harga_per_satuan') as string,
     satuan: formData.get('satuan') as string,
+    // last_updated : formData.get('last_updated') as string,
     foto_sampah: formData.get('foto_sampah') as File,
   }
 
@@ -87,7 +88,8 @@ export async function updateSampah(formData: FormData, id: number) {
     nama_sampah: rawFormData.nama_sampah,
     harga_per_satuan: rawFormData.harga_per_satuan,
     satuan: rawFormData.satuan,
-    foto_sampah: rawFormData.foto_sampah
+    last_updated: new Date().toISOString(),
+    // foto_sampah: rawFormData.foto_sampah
   }
 
   if (rawFormData.foto_sampah && rawFormData.foto_sampah.size > 0) {
@@ -116,9 +118,13 @@ export async function updateSampah(formData: FormData, id: number) {
     .update(updateData)
     .eq('id', id)
 
-  if (error) {
-    console.error(error)
-    throw new Error("Update Sampah Gagal.")
+if (error) {
+    // 1. Log error lengkap di terminal server (VS Code)
+    console.error("❌ ERROR DELETE NASABAH:", error)
+    
+
+    // 3. Kembalikan pesan asli dari Supabase biar ketahuan errornya apa
+    return { success: false, message: `Gagal: ${error.message} (Code: ${error.code})` }
   }
 
   // Refresh data di halaman daftar sampah
@@ -129,14 +135,75 @@ export async function updateSampah(formData: FormData, id: number) {
 
 export async function deleteSampah(id: number) {
   const supabase = await createClient()
-  const { error } = await supabase
+
+  // 1. AMBIL DATA DULU (Buat dapet URL fotonya)
+  const { data: dataLama, error: fetchError } = await supabase
+    .from('sampah')
+    .select('foto_sampah')
+    .eq('id', id)
+    .single()
+
+  if (fetchError) {
+    return { success: false, message: "Gagal mengambil data sampah." }
+  }
+
+  // 2. COBA HAPUS DATA DI DATABASE
+  const { error: deleteDbError } = await supabase
     .from('sampah')
     .delete()
     .eq('id', id)
-  if (error) {
-    console.error(error)
-    throw new Error("Hapus Sampah Gagal.")
+
+  if (deleteDbError) {
+    console.error("DB Error:", deleteDbError)
+    // Cek constraint foreign key
+    if (deleteDbError.code === '23503') {
+       return { 
+         success: false, 
+         message: "Gagal: Sampah ini masih dipakai di transaksi. Hapus transaksinya dulu." 
+       }
+    }
+    return { success: false, message: "Gagal menghapus data sampah." }
   }
-    revalidatePath('/admin/sampah')
-    return { success: true, message: "Sampah berhasil dihapus!" };
+
+  // 3. JIKA DB SUKSES HAPUS -> HAPUS FILE DI STORAGE
+  // Cek dulu apakah dia punya foto? (Bukan null/string kosong)
+if (dataLama?.foto_sampah) {
+    const fotoUrl = dataLama.foto_sampah
+    const bucketName = 'foto_sampah' // Pastikan sama persis dengan nama di dashboard!
+
+    // CARA AMAN PARSING URL:
+    // Kita cari posisi nama bucket, lalu ambil teks setelahnya.
+    // URL biasanya: .../storage/v1/object/public/foto_sampah/nama-file.jpg
+    
+    const targetPath = `/${bucketName}/` 
+    const parts = fotoUrl.split(targetPath)
+
+    if (parts.length > 1) {
+        // Ambil bagian belakang (nama file kotor)
+        let rawFileName = parts[1] 
+        
+        // 1. Bersihkan sisa slash di depan (jika ada)
+        if (rawFileName.startsWith('/')) {
+            rawFileName = rawFileName.slice(1)
+        }
+
+        // 2. Decode URL (Ubah %20 jadi spasi, dll)
+        const cleanFileName = decodeURIComponent(rawFileName)
+
+        console.log("🗑️ MENGHAPUS FILE:", cleanFileName) // Cek log ini di terminal!
+
+        const { data, error: storageError } = await supabase.storage
+            .from(bucketName)
+            .remove([cleanFileName]) // Kirim nama yang sudah bersih
+
+        if (storageError) {
+            console.error("Gagal hapus storage:", storageError)
+        } else {
+            console.log("Status Hapus:", data) // Cek apakah data kosong atau ada isinya
+        }
+    }
+}
+
+  revalidatePath('/admin/sampah')
+  return { success: true, message: "Sampah dan fotonya berhasil dihapus!" };
 }

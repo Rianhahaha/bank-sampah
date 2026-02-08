@@ -123,12 +123,11 @@ export default function TransaksiPage({
                 
                 {/* HEADER */}
                 <div className="flex items-center gap-3 pb-4 border-b border-gray-100 dark:border-gray-800">
-                    <div className="p-3 bg-primary/10 rounded-xl text-primary">
+                    {/* <div className="p-3 bg-primary/10 rounded-xl text-primary">
                         <ShoppingCart className="size-6" />
-                    </div>
+                    </div> */}
                     <div>
-                        <h2 className="text-xl font-bold text-gray-800 dark:text-white">Input Setoran Sampah</h2>
-                        <p className="text-sm text-gray-500">Pastikan menimbang dengan jujur ya, jangan korupsi timbangan.</p>
+                        <h2 className="text-xl font-bold text-gray-800 dark:text-white">Tambah Transaksi</h2>
                     </div>
                 </div>
 
@@ -141,7 +140,7 @@ export default function TransaksiPage({
                         <div className="bg-gray-50 dark:bg-white/5 p-5 rounded-xl border border-gray-200 dark:border-white/5">
                             <div className="flex items-center gap-2 mb-4 text-gray-800 dark:text-white font-semibold">
                                 <User className="size-5 text-blue-500" />
-                                <h3>1. Identitas Penyetor</h3>
+                                <h3>Nasabah</h3>
                             </div>
                             <Label>Pilih Nasabah</Label>
                             {/* Pakai Select Native HTML dulu biar gampang search-nya (kalau mau canggih pakai library kayak React Select) */}
@@ -161,7 +160,7 @@ export default function TransaksiPage({
                         <div className="bg-gray-50 dark:bg-white/5 p-5 rounded-xl border border-gray-200 dark:border-white/5 flex flex-col gap-4">
                             <div className="flex items-center gap-2 mb-1 text-gray-800 dark:text-white font-semibold">
                                 <Calculator className="size-5 text-green-500" />
-                                <h3>2. Data Timbangan</h3>
+                                <h3>Pilih Sampah</h3>
                             </div>
 
                             <div>
@@ -212,7 +211,7 @@ export default function TransaksiPage({
                     <div className="lg:col-span-2 flex flex-col h-full">
                         <div className="flex-1 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden flex flex-col">
                             <div className="p-4 bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5 font-semibold text-gray-700 dark:text-gray-200">
-                                3. Rincian Setoran
+                                Rincian
                             </div>
                             
                             <div className="flex-1 overflow-x-auto">
@@ -220,7 +219,7 @@ export default function TransaksiPage({
                                     <thead className="bg-gray-50 dark:bg-white/5 text-xs uppercase font-medium">
                                         <tr>
                                             <th className="px-6 py-3">Sampah</th>
-                                            <th className="px-6 py-3 text-center">Berat</th>
+                                            <th className="px-6 py-3 text-center">Jumlah</th>
                                             <th className="px-6 py-3 text-right">Harga @</th>
                                             <th className="px-6 py-3 text-right">Subtotal</th>
                                             <th className="px-6 py-3 text-center">Aksi</th>

@@ -14,6 +14,7 @@ export interface Sampah {
     harga_per_satuan: number;
     satuan: string;
     created_at: string;
+    last_updated: string;
 }
 
 

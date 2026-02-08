@@ -219,7 +219,7 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                                         {displayData?.map((order) => (
 
-                                            <div key={order.id} className="w-full h-[10rem] flex shadow-xl border-gray-200 dark:border-white/5 rounded-2xl overflow-hidden ">
+                                            <div key={order.id} className="w-full h-[10rem] flex shadow-xl border border-gray-200 dark:border-white/5 rounded-2xl overflow-hidden ">
                                                 <Image src={order.foto_sampah && order.foto_sampah.startsWith('http')
                                                     ? order.foto_sampah
                                                     : '/default-placeholder.png'} // Sediakan file ini di folder public/
@@ -235,16 +235,22 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                                                             Rp.{order.harga_per_satuan} / {order.satuan}
                                                         </h2>
                                                         <p className="text-xs text-gray-500 dark:text-white/50">Dibuat Pada : {new Date(order.created_at).toLocaleDateString()}</p>
+                                                        {/* {order.last_updated ? (
+
+                                                            <p className="text-xs text-gray-500 dark:text-white/50">Terakhir Diedit : {new Date(order.last_updated).toLocaleDateString()}</p>
+                                                        ): (
+                                                            <></>
+                                                        )} */}
                                                     </div>
                                                     <div className='w-full flex justify-end gap-2'>
                                                         <button
-                                                            className='main-button py-1!'
+                                                            className='main-button p-1.5!'
                                                             onClick={() => handleEdit(order)}
                                                         >
                                                             <EditIcon className='size-5' />
                                                         </button>
                                                         <button
-                                                            className='main-button-danger py-1!'
+                                                            className='main-button-danger p-1.5!'
                                                             onClick={() => handleDeleteModal(order)}
                                                         >
 
@@ -402,7 +408,7 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                                     <div>
                                         <Label>Harga</Label>
                                         <Input
-                                            type="text"
+                                            type="number"
                                             name="harga_per_satuan"
                                             defaultValue={selectedNasabah?.harga_per_satuan || ''}
                                             placeholder='Harga Sampah...'
@@ -410,6 +416,7 @@ export default function SampahPage({ data }: { data: Sampah[] }) {
                                     </div>
                                     <div>
                                         <Label>Satuan</Label>
+
                                         <Input
                                             type="hidden"
                                             name="satuan"

@@ -50,6 +50,11 @@ const navItems: NavItem[] = [
     name: "Transaksi",
     path: "/admin/transaksi",
   },
+  {
+    icon: <Banknote />,
+    name: "Laporan",
+    path: "/admin/laporan",
+  },
   // {
   //   icon: <GridIcon />,
   //   name: "Dashboard",
