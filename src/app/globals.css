@@ -197,27 +197,27 @@
 }
 
 @utility menu-item {
-  @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
+  @apply relative flex items-center w-full gap-3 px-3 py-5 font-medium rounded-none text-white transition-all duration-200 ease-in-out;
 }
 
 @utility menu-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-brand-50 text-primary;
 }
 
 @utility menu-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+  @apply text-white hover:bg-gray-100 hover:text-primary;
 }
 
 @utility menu-item-icon {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400;
+  @apply text-gray-500 group-hover:text-primary transition-all duration-200 ease-in-out;
 }
 
 @utility menu-item-icon-active {
-  @apply text-brand-500 dark:text-brand-400;
+  @apply text-primary ;
 }
 
 @utility menu-item-icon-inactive {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
+  @apply text-white group-hover:text-primary;
 }
 
 @utility menu-item-arrow {
@@ -772,4 +772,8 @@ span.flatpickr-weekday,
 }
 .main-button-danger {
   @apply bg-red-500 text-white hover:text-red-500 hover:fill-red-500 hover:border-red-500
+}
+
+.main-gradient {
+  @apply bg-gradient-to-br from-[#14B498] to-[#06787C];
 }

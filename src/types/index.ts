@@ -34,6 +34,14 @@ export interface Transaksi {
     nasabah: {
         nama: string | null;
     }
+    transaksi_detail?: {
+        berat?:number;
+        subtotal?:number;
+        sampah?: {
+            nama_sampah?:string
+            satuan?:string
+        }
+    }[]
 }
 export interface DetailTransaksi {
     id: number;

@@ -3,25 +3,31 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { Filter, Loader2 } from 'lucide-react'
-import Label from '@/components/form/Label'
 // Pastikan import path ini sesuai lokasi komponen DatePicker kamu
 import DatePicker from '@/components/form/date-picker'
+
 export default function DateRangeFilter() {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const { replace } = useRouter()
 
   // 1. Ambil params dari URL buat Default Value
+  // Kita butuh ini agar saat di-refresh, input tidak kosong
   const initialStart = searchParams.get('start')
   const initialEnd = searchParams.get('end')
 
-  // State untuk menyimpan range sementara [Date, Date]
-  // Kita isi default-nya dari URL kalau ada
-  const [dateRange, setDateRange] = useState<Date[]>([])
+  // 2. State untuk menyimpan tanggal masing-masing
+  // Kita inisialisasi dengan nilai dari URL (jika ada) biar state sinkron
+  const [startDate, setStartDate] = useState<Date | undefined>(
+    initialStart ? new Date(initialStart) : undefined
+  )
+  const [endDate, setEndDate] = useState<Date | undefined>(
+    initialEnd ? new Date(initialEnd) : undefined
+  )
+
   const [isPending, setIsPending] = useState(false)
 
-  // Fungsi helper buat format Date Object ke "YYYY-MM-DD"
-  // Flatpickr balikin Date object asli, jadi kita harus format manual biar aman di URL
+  // Fungsi helper format Date ke "YYYY-MM-DD"
   const formatDate = (date: Date) => {
     if (!date) return ''
     const year = date.getFullYear()
@@ -34,16 +40,17 @@ export default function DateRangeFilter() {
     setIsPending(true)
     const params = new URLSearchParams(searchParams)
     
-    // Cek apakah user sudah pilih Range (Start & End)
-    if (dateRange.length === 2) {
-        const startStr = formatDate(dateRange[0])
-        const endStr = formatDate(dateRange[1])
-
-        params.set('start', startStr)
-        params.set('end', endStr)
+    // Logic Start Date
+    if (startDate) {
+        params.set('start', formatDate(startDate))
     } else {
-        // Kalau range dikosongin/direset
         params.delete('start')
+    }
+
+    // Logic End Date
+    if (endDate) {
+        params.set('end', formatDate(endDate))
+    } else {
         params.delete('end')
     }
 
@@ -54,25 +61,40 @@ export default function DateRangeFilter() {
   return (
     <div className="bg-white p-5 rounded-xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex flex-col sm:flex-row items-end gap-4 shadow-sm">
       
-      <div className="w-full sm:min-w-[300px]">
-        {/* Label di sini opsional karena DatePicker kamu udah punya props label */}
+      {/* INPUT TANGGAL MULAI */}
+      <div className="w-full sm:w-auto min-w-[200px]">
         <DatePicker
-            id="range-picker"
-            label="Pilih Rentang Tanggal"
-            placeholder="Mulai - Selesai"
-            mode="range" 
-            defaultDate={initialStart && initialEnd ? [initialStart, initialEnd] : undefined}
-            
-            onChange={(selectedDates: Date[]) => {
-                setDateRange(selectedDates)
+            id="start-date"
+            label="Tanggal Mulai"
+            placeholder="Pilih Tanggal"
+            // Default value dari URL (String)
+            // defaultDate={initialStart || undefined}
+            // Flatpickr mengembalikan array dates, kita ambil index ke-0
+            onChange={(dates: Date[]) => {
+                setStartDate(dates[0])
             }}
         />
       </div>
 
+      {/* INPUT TANGGAL AKHIR */}
+      <div className="w-full sm:w-auto min-w-[200px]">
+        <DatePicker
+            id="end-date"
+            label="Tanggal Akhir"
+            placeholder="Pilih Tanggal"
+            // Default value dari URL (String)
+            // defaultDate={initialEnd || undefined} 
+            onChange={(dates: Date[]) => {
+                setEndDate(dates[0])
+            }}
+        />
+      </div>
+
+      {/* TOMBOL FILTER */}
       <button 
         onClick={handleFilter}
         disabled={isPending}
-        className="main-button h-[44px] px-6 flex items-center gap-2 mb-[1px]" // mb-[1px] buat alignment visual
+        className="main-button h-[44px] px-6 flex items-center gap-2 mb-[1px]"
       >
         {isPending ? <Loader2 className="animate-spin size-4" /> : <Filter className="size-4" />}
         Tampilkan

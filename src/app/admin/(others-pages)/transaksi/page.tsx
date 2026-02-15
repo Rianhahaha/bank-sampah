@@ -6,7 +6,7 @@ import TransaksiPage from './transaksiPage';
 import { getTransaksi } from '@/data/transaksi';
 import { Transaksi } from '@/types';
 export const metadata: Metadata = {
-    title: "Bank Sampah | Sampah",
+    title: "Bank Sampah | Transaksi",
 };
 export default async function page() {
     const data = await getTransaksi();

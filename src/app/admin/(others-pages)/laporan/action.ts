@@ -1,6 +1,6 @@
 // src/data/laporan.ts
 import { createClient } from '@/utils/supabase/server'
-import { Transaksi } from '@/types' // Pastikan type Transaksi ada
+import { Sampah, Transaksi } from '@/types' // Pastikan type Transaksi ada
 
 export async function getLaporanTransaksi(startDate?: string, endDate?: string) {
   const supabase = await createClient()
@@ -12,7 +12,12 @@ export async function getLaporanTransaksi(startDate?: string, endDate?: string) 
       created_at,
       total_harga,
       jenis,
-      nasabah ( nama )
+      nasabah ( nama ),
+      transaksi_detail (
+      berat,
+      subtotal,
+      sampah ( nama_sampah, satuan )
+      )
     `)
     .order('created_at', { ascending: false })
 
@@ -36,3 +41,15 @@ export async function getLaporanTransaksi(startDate?: string, endDate?: string) 
   // Casting type sesuai kebutuhan
   return data as unknown as Transaksi[]
 }
+
+export async function getSampahName() {
+      const supabase = await createClient()
+        const { data: listSampah, error:errorSampah } = await supabase
+        .from('sampah')
+        .select('*')
+    if (errorSampah) {
+        console.error("WADUH ERROR:", errorSampah.message, errorSampah.hint, errorSampah.details);
+    }
+    return listSampah as unknown as Sampah;
+
+ }

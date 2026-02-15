@@ -20,7 +20,7 @@ import {
   UserIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
-import { Banknote, LayoutGridIcon, Trash2Icon, UserCircle } from "lucide-react";
+import { Banknote, BookMarkedIcon, LayoutGridIcon, Trash2Icon, UserCircle } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -51,7 +51,7 @@ const navItems: NavItem[] = [
     path: "/admin/transaksi",
   },
   {
-    icon: <Banknote />,
+    icon: <BookMarkedIcon />,
     name: "Laporan",
     path: "/admin/laporan",
   },
@@ -66,46 +66,46 @@ const navItems: NavItem[] = [
   //   name: "Dashboard1",
   //   subItems: [{ name: "Ecommerce", path: "/", pro: false }],
   // },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/admin/calendar",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/admin/profile",
-  },
+  // {
+  //   icon: <CalenderIcon />,
+  //   name: "Calendar",
+  //   path: "/admin/calendar",
+  // },
+  // {
+  //   icon: <UserCircleIcon />,
+  //   name: "User Profile",
+  //   path: "/admin/profile",
+  // },
 
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/admin/form-elements", pro: false }],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/admin/basic-tables", pro: false }],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
-  },
+  // {
+  //   name: "Forms",
+  //   icon: <ListIcon />,
+  //   subItems: [{ name: "Form Elements", path: "/admin/form-elements", pro: false }],
+  // },
+  // {
+  //   name: "Tables",
+  //   icon: <TableIcon />,
+  //   subItems: [{ name: "Basic Tables", path: "/admin/basic-tables", pro: false }],
+  // },
+  // {
+  //   name: "Pages",
+  //   icon: <PageIcon />,
+  //   subItems: [
+  //     { name: "Blank Page", path: "/blank", pro: false },
+  //     { name: "404 Error", path: "/error-404", pro: false },
+  //   ],
+  // },
 ];
 
 const othersItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      { name: "Line Chart", path: "/admin/line-chart", pro: false },
-      { name: "Bar Chart", path: "/admin/bar-chart", pro: false },
-    ],
-  },
+  // {
+  //   icon: <PieChartIcon />,
+  //   name: "Charts",
+  //   subItems: [
+  //     { name: "Line Chart", path: "/admin/line-chart", pro: false },
+  //     { name: "Bar Chart", path: "/admin/bar-chart", pro: false },
+  //   ],
+  // },
   // {
   //   icon: <BoxCubeIcon />,
   //   name: "UI Elements",
@@ -136,20 +136,20 @@ const AppSidebar: React.FC = () => {
     navItems: NavItem[],
     menuType: "main" | "others"
   ) => (
-    <ul className="flex flex-col gap-4">
+    <ul className="flex flex-col">
       {navItems.map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group  ${
+              className={`menu-item group justify-center  ${
                 openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
+                  ? "menu-item-active "
+                  : "menu-item-inactive "
               } cursor-pointer ${
                 !isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "lg:justify-start"
+                  ? "justify-center"
+                  : "justify-center"
               }`}
             >
               <span
@@ -179,9 +179,11 @@ const AppSidebar: React.FC = () => {
             nav.path && (
               <Link
                 href={nav.path}
-                className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
+                className={`menu-item group  ${
+                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"}
+                  
+                  ` 
+              }
               >
                 <span
                   className={`${
@@ -329,7 +331,7 @@ const isActive = useCallback((path: string) => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-0 left-0 bg-gradien main-gradient h-screen transition-all duration-300 ease-in-out z-50 
         ${
           isExpanded || isMobileOpen
             ? "w-[290px]"
@@ -343,7 +345,7 @@ const isActive = useCallback((path: string) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex  ${
+        className={`py-8 flex py-3  ${
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
@@ -351,15 +353,15 @@ const isActive = useCallback((path: string) => {
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <Image
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
+                className="w-full mx-5"
+                src="/logo.svg"
                 alt="Logo"
                 width={150}
                 height={40}
               />
               <Image
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="/Logo_only.svg"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -367,7 +369,7 @@ const isActive = useCallback((path: string) => {
             </>
           ) : (
             <Image
-              src="/images/logo/logo-icon.svg"
+              src="/Logo_only.svg"
               alt="Logo"
               width={32}
               height={32}
@@ -377,25 +379,26 @@ const isActive = useCallback((path: string) => {
       </div>
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col">
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
                   !isExpanded && !isHovered
-                    ? "lg:justify-center"
+                    ? "justify-center"
                     : "justify-start"
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
+                  ""
                 ) : (
-                  <HorizontaLDots />
+                  // <HorizontaLDots />
+                  <></>
                 )}
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
 
-            <div className="">
+            {/* <div className="">
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
                   !isExpanded && !isHovered
@@ -410,10 +413,10 @@ const isActive = useCallback((path: string) => {
                 )}
               </h2>
               {renderMenuItems(othersItems, "others")}
-            </div>
+            </div> */}
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+        {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
       </div>
     </aside>
   );

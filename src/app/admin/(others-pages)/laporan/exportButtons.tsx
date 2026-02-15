@@ -3,8 +3,8 @@ import React from 'react'
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import { FileSpreadsheet, FileText } from 'lucide-react' // Pastikan punya icon ini
-import { Transaksi } from '@/types' // Sesuaikan import tipe data kamu
+import { FileSpreadsheet, FileText } from 'lucide-react' 
+import { Transaksi } from '@/types' 
 
 interface ExportButtonsProps {
   data: Transaksi[];
@@ -15,50 +15,103 @@ export default function ExportButtons({ data, fileName = 'Laporan-Transaksi' }: 
 
   // --- LOGIKA EXCEL ---
   const handleExportExcel = () => {
-    // 1. Flatten Data (Ratakan Object)
-    // Excel nggak bisa baca object bersarang kayak { nasabah: { nama: 'Budi' } }
-    // Jadi harus kita bongkar manual.
-    const excelData = data.map((item, index) => ({
-      No: index + 1,
-      'Nama Nasabah': item.nasabah?.nama || '-',
-      'Tanggal': new Date(item.created_at).toLocaleDateString('id-ID'),
-    //   'Jenis': item.jenis || 'SETOR',
-      'Total Rupiah': item.total_harga // Biarkan angka asli biar bisa dijumlah di Excel
-    }))
+    const excelData = data.map((item, index) => {
+      
+      const details = Array.isArray(item.transaksi_detail) 
+          ? item.transaksi_detail 
+          : [];
 
-    // 2. Bikin Worksheet
+      const rincianText = details
+          .map((d: any) => {
+              const nama = d.sampah?.nama_sampah || 'Sampah Hapus';
+              const berat = d.berat || 0;
+              const satuan = d.sampah?.satuan || 'kg';
+              
+              return `- ${nama} (${berat} ${satuan})`; 
+          })
+          .join('\n'); 
+
+      return {
+        No: index + 1,
+        'Tanggal': new Date(item.created_at).toLocaleDateString('id-ID'),
+        'Nama Nasabah': item.nasabah?.nama || '-',
+        'Rincian Sampah': rincianText, 
+        'Total Rupiah': item.total_harga
+      }
+    })
+
     const worksheet = XLSX.utils.json_to_sheet(excelData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Transaksi");
+    
+    // Sedikit styling biar kolom Rincian agak lebar di Excel
+    // wch = width chars (jumlah karakter)
+    const columnWidths = [
+        { wch: 5 },  // No
+        { wch: 15 }, // Tanggal
+        { wch: 20 }, // Nama
+        { wch: 40 }, // Rincian (Lebarin biar enak)
+        { wch: 15 }  // Total
+    ];
+    worksheet['!cols'] = columnWidths;
 
-    // 3. Download File
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan");
     XLSX.writeFile(workbook, `${fileName}.xlsx`);
   }
 
-  // --- LOGIKA PDF ---
+  // --- LOGIKA PDF (SUDAH DISAMAKAN) ---
   const handleExportPDF = () => {
     const doc = new jsPDF()
 
     // Judul
     doc.text('Laporan Transaksi Bank Sampah', 14, 10);
     
-    // Siapkan Data Tabel
-    const tableColumn = ["No", "Nama Nasabah", "Tanggal", "Jenis", "Total (Rp)"];
-    const tableRows = data.map((item, index) => [
-      index + 1,
-      item.nasabah?.nama || '-',
-      new Date(item.created_at).toLocaleDateString('id-ID'),
-    //   item.jenis || 'SETOR',
-      `Rp ${item.total_harga.toLocaleString('id-ID')}` // Format string Rupiah buat PDF
-    ]);
+    // 1. Samakan Header Kolom dengan Excel
+    const tableColumn = ["No", "Tanggal", "Nama Nasabah", "Rincian Sampah", "Total (Rp)"];
+
+    // 2. Map Data (Logika rincianText dicopas kesini)
+    const tableRows = data.map((item, index) => {
+      
+      // -- LOGIC RINCIAN SAMPAH (Sama persis kayak Excel) --
+      const details = Array.isArray(item.transaksi_detail) 
+          ? item.transaksi_detail 
+          : [];
+
+      const rincianText = details
+          .map((d: any) => {
+              const nama = d.sampah?.nama_sampah || 'Sampah Hapus';
+              const berat = d.berat || 0;
+              const satuan = d.sampah?.satuan || 'kg';
+              
+              // Kasih strip (-) biar di PDF kelihatan kayak list bullet point
+              return `- ${nama} (${berat} ${satuan})`; 
+          })
+          .join('\n'); // Enter ini akan dibaca otomatis oleh autoTable
+      // ----------------------------------------------------
+
+      return [
+        index + 1,
+        new Date(item.created_at).toLocaleDateString('id-ID'),
+        item.nasabah?.nama || '-',
+        rincianText, // Masukkan string enter tadi
+        `Rp ${item.total_harga.toLocaleString('id-ID')}`
+      ]
+    });
 
     // Generate Tabel Otomatis
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      startY: 20, // Jarak dari judul
-      styles: { fontSize: 8 }, // Biar muat banyak
-      headStyles: { fillColor: [22, 163, 74] }, // Warna hijau (biar tema lingkungan)
+      startY: 20,
+      styles: { 
+        fontSize: 9, 
+        valign: 'top', // Teks rata atas biar rapi kalau barisnya tinggi
+        overflow: 'linebreak' // Pastikan teks turun ke bawah kalau kepanjangan
+      }, 
+      headStyles: { fillColor: [22, 163, 74] }, // Hijau
+      // Opsional: Atur lebar kolom spesifik jika Rincian terlalu sempit
+      columnStyles: {
+        3: { cellWidth: 70 } // Index 3 adalah kolom Rincian Sampah, kita kasih lebar extra
+      }
     })
 
     // Save
