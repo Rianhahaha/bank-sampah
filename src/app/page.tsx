@@ -133,7 +133,7 @@ export default function Page() {
                 {/* SECTION TENTANG */}
                 <div className="min-h-screen flex items-center  px-5 md:px-10 lg:px-20 relative z-20" id='tentang'>
 
-                    <Image className='absolute w-[10vw] z-30 right-[4vw] top-[20vh]' alt='logo' width={300} height={300} src='/images/logo/logo_green.svg' />
+                    <Image className='absolute w-[10vw] z-30 right-[4vw] top-[20vh] hidden md:block ' alt='logo' width={300} height={300} src='/images/logo/logo_green.svg' />
 
                     <div className="flex flex-col text-center md:text-left md:w-[60%]">
                         <div className='font-bold text-white'>
