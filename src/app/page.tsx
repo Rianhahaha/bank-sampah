@@ -122,7 +122,7 @@ export default function Page() {
                             <p className='font-normal text-[18px] my-5'>
                                 Ubah barang tidak terpakai menjadi sesuatu yang lebih berharga
                             </p>
-                            <button className='main-button-white mt-5'>Lebih Lanjut</button>
+                            <Link href='#tentang' className='main-button-white mt-5'>Lebih Lanjut</Link>
                         </div>
                     </div>
                     <div className="flex flex-col w-full md:w-1/2">
