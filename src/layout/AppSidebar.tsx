@@ -361,7 +361,7 @@ const isActive = useCallback((path: string) => {
               />
               <Image
                 className="hidden dark:block"
-                src="/Logo_only.png"
+                src="/logo_only.png"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -369,7 +369,7 @@ const isActive = useCallback((path: string) => {
             </>
           ) : (
             <Image
-              src="/Logo_only.png"
+              src="/logo_only.png"
               alt="Logo"
               width={32}
               height={32}
