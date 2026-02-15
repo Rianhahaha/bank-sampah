@@ -21,6 +21,8 @@ import {
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 import { Banknote, BookMarkedIcon, LayoutGridIcon, Trash2Icon, UserCircle } from "lucide-react";
+import logo from '@/assets/logo.svg'
+import logo_only from '@/assets/logo_only.svg'
 
 
 type NavItem = {
@@ -355,14 +357,14 @@ const isActive = useCallback((path: string) => {
             <>
               <Image
                 className="w-[15rem] mx-5"
-                src="/logo.svg"
+                src={logo}
                 alt="Logo"
                 width={150}
                 height={40}
               />
               <Image
                 className="hidden dark:block w-[15rem] mx-5"
-                src="/logo_only.png"
+                src={logo_only}
                 alt="Logo"
                 width={150}
                 height={40}
@@ -370,7 +372,7 @@ const isActive = useCallback((path: string) => {
             </>
           ) : (
             <Image
-              src="/logo_only.png"
+              src={logo_only}
               alt="Logo"
               width={32}
               height={32}
