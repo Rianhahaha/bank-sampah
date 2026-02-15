@@ -22,6 +22,7 @@ import {
 import SidebarWidget from "./SidebarWidget";
 import { Banknote, BookMarkedIcon, LayoutGridIcon, Trash2Icon, UserCircle } from "lucide-react";
 
+
 type NavItem = {
   name: string;
   icon: React.ReactNode;
@@ -345,7 +346,7 @@ const isActive = useCallback((path: string) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex py-3  ${
+        className={`py-8 flex  ${
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
@@ -353,14 +354,14 @@ const isActive = useCallback((path: string) => {
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <Image
-                className="w-full mx-5"
-                src="/logo.png"
+                className="w-[15rem] mx-5"
+                src="/logo.svg"
                 alt="Logo"
                 width={150}
                 height={40}
               />
               <Image
-                className="hidden dark:block"
+                className="hidden dark:block w-[15rem] mx-5"
                 src="/logo_only.png"
                 alt="Logo"
                 width={150}
