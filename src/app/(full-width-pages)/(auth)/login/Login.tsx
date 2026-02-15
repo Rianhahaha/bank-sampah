@@ -9,6 +9,8 @@ import React, { useActionState, useEffect, useState } from "react";
 import { login } from "./action";
 
 import { toast } from "sonner";
+import Image from "next/image";
+import { ArrowBigLeftDashIcon, LogIn } from "lucide-react";
 
 const initialState = {
   message: '',
@@ -20,16 +22,16 @@ export default function LoginPage() {
   const [state, formAction] = useActionState(login, initialState)
 
   useEffect(() => {
-    if(state.status === 'success'){
+    if (state.status === 'success') {
       toast.success('Login berhasil! Mengalihkan ke dashboard...');
-    } else if(state.status === 'error'){
+    } else if (state.status === 'error') {
       toast.error(state.message || 'Gagal login. Silakan coba lagi.');
     }
 
   }, [state])
 
   return (
-    <div className="flex flex-col flex-1 lg:w-1/2 w-full">
+    <div className="flex flex-col flex-1 lg:w-1/2 w-full main-gradient p-6">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
         {/* <Link
           href="/"
@@ -41,11 +43,16 @@ export default function LoginPage() {
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div>
-          <div className="mb-5 sm:mb-8">
-           Version -- commit : modify UI, Dashboard UI
-            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+          <div className="mb-2">
+            <Link href='/' className="main-button-white mb-10">
+            <ArrowBigLeftDashIcon/>
+            </Link>
+            <Image alt="logo" src='/images/logo/logo.svg' width={100} height={100} className="w-full" />
+            <h1 className="my-5 font-semibold text-white text-xl text-center">
               Masuk
+             
             </h1>
+
             {/* <p className="text-sm text-gray-500 dark:text-gray-400">
               Enter your email and password to sign in!
             </p> */}
@@ -106,13 +113,13 @@ export default function LoginPage() {
             <form action={formAction}>
               <div className="space-y-6">
                 <div>
-                  <Label>
+                  <Label className="text-white">
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="Masukkan Email..." type="email" name="email" />
+                  <Input className="placeholder:text-white/50 text-white bg-white/10" placeholder="Masukkan Email..." type="email" name="email" />
                 </div>
                 <div>
-                  <Label>
+                  <Label className="text-white">
                     Password <span className="text-error-500">*</span>{" "}
                   </Label>
                   <div className="relative">
@@ -120,26 +127,27 @@ export default function LoginPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Masukkan Password..."
                       name="password"
+                      className="placeholder:text-white/50 text-white bg-white/10"
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
                     >
                       {showPassword ? (
-                        <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
+                        <EyeIcon className="fill-white" />
                       ) : (
-                        <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
+                        <EyeCloseIcon className="fill-white" />
                       )}
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  {/* <div className="flex items-center gap-3">
                     <Checkbox checked={isChecked} onChange={setIsChecked} />
                     <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
                       Keep me logged in
                     </span>
-                  </div>
+                  </div> */}
                   {/* <Link
                     href="/reset-password"
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
@@ -149,13 +157,17 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <button
-                    className="main-button"
+                    className="main-button-white w-full"
                     type="submit"
 
                   >
-                    Masuk
+                    Masuk sebagai Admin
+                     <LogIn/>
                   </button>
                 </div>
+                <h1 className="mb-2 font-normal text-white text-md text-center">
+                  Version -- commit : modify UI, Dashboard UI
+                </h1>
               </div>
             </form>
 
