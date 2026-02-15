@@ -354,14 +354,14 @@ const isActive = useCallback((path: string) => {
             <>
               <Image
                 className="w-full mx-5"
-                src="/logo.svg"
+                src="/logo.png"
                 alt="Logo"
                 width={150}
                 height={40}
               />
               <Image
                 className="hidden dark:block"
-                src="/Logo_only.svg"
+                src="/Logo_only.png"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -369,7 +369,7 @@ const isActive = useCallback((path: string) => {
             </>
           ) : (
             <Image
-              src="/Logo_only.svg"
+              src="/Logo_only.png"
               alt="Logo"
               width={32}
               height={32}
