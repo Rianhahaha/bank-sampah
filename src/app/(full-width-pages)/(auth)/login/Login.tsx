@@ -166,7 +166,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <h1 className="mb-2 font-normal text-white text-md text-center">
-                  Version -- commit : modify UI, Dashboard UI
+                  Version -- commit : Landing Page UI, Login UI, Responsiveness, turn off dark mode, etc
                 </h1>
               </div>
             </form>
