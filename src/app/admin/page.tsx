@@ -34,9 +34,9 @@ export default async function Ecommerce() {
         {/* overview */}
         <div className="rounded-2xl border bg-gradien main-gradient p-5  md:p-6">
           <div className="font-semibold text-2xl text-white mb-5">Dashboard</div>
-          <div className="flex">
+          <div className="flex flex-col md:flex-row">
             {/* Item */}
-            <div className="flex items-center gap-5 text-white border-r-2 border-white my-4 pr-0 md:pr-5">
+            <div className="flex items-center gap-5 text-white md:border-r-2 md:border-white my-4 pr-0 md:pr-5">
               <div className="bg-white/20 p-4 rounded-full">
                 <UsersIcon className=" size-8  " />
               </div>
@@ -44,7 +44,7 @@ export default async function Ecommerce() {
                 <span>
                   Jumlah Nasabah
                 </span>
-                <span className="text-[40px] font-bold">
+                <span className="text-[30px] md:text-[40px] font-bold">
                   {totalNasabah}
                 </span>
               </div>
@@ -59,7 +59,7 @@ export default async function Ecommerce() {
                 <span>
                   Jumlah Jenis Sampah
                 </span>
-                <span className="text-[40px] font-bold">
+                <span className="text-[30px] md:text-[40px] font-bold">
                   {totalSampah}
                 </span>
               </div>

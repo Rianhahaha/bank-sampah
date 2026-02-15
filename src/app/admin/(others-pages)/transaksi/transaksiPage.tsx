@@ -98,7 +98,7 @@ export default function TransaksiPage({ data }: { data: Transaksi[] }) {
                         Daftar Transaksi
                     </h2>
 
-                    <div className="relative flex justify-between">
+                    <div className="relative flex justify-between gap-2">
                         <div className='flex items-stretch'>
                             <div className='size-full relative'>
                                 {searchTerm && (
@@ -143,7 +143,9 @@ export default function TransaksiPage({ data }: { data: Transaksi[] }) {
 
                         >
                             <Link href="/admin/transaksi/tambah">
-                                Tambah Transaksi
+                                <span className='hidden md:block'>
+                                    Tambah Transaksi
+                                </span>
                             </Link>
                             <Plus className='size-4' />
                         </button>

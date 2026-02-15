@@ -7,7 +7,7 @@ export default function LaporanTable({ data }: { data: Transaksi[] }) {
     }
 
     return (
-        <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+        <div className="min-w-[300px] overflow-y-auto rounded-xl border border-gray-200 shadow-sm">
             <table className="w-full text-left text-sm text-gray-500">
                 <thead className="bg-gray-50 text-xs uppercase text-gray-700">
                     <tr>

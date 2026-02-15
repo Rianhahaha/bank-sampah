@@ -132,7 +132,7 @@ export default function NasabahPage({ data }: { data: Nasabah[] }) {
                         Daftar Nasabah
                     </h2>
 
-                    <div className="relative flex justify-between">
+                    <div className="relative flex justify-between gap-2">
                         <div className='flex items-stretch'>
                             <div className='size-full relative'>
                                 {searchTerm && (
@@ -176,7 +176,9 @@ export default function NasabahPage({ data }: { data: Nasabah[] }) {
                             className="main-button flex "
                             onClick={handleAdd}
                         >
+                            <span className='hidden md:block'>
                             Tambah Nasabah
+                            </span>
                             <Plus className='size-4' />
                         </button>
                     </div>
