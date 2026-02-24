@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from 'sonner'
 
-import { AlertCircleIcon, EditIcon, LucideMessageSquareWarning, Plus, TrashIcon, X } from 'lucide-react'
+import { AlertCircleIcon, Edit, EditIcon, LucideMessageSquareWarning, Plus, TrashIcon, View, X } from 'lucide-react'
 import { Nasabah, Transaksi } from '@/types';
 import Button from '@/components/ui/button/Button';
 import { Modal } from '@/components/ui/modal';
@@ -218,8 +218,16 @@ export default function TransaksiPage({ data }: { data: Transaksi[] }) {
                                                             className='main-button rounded-full! p-3!'
                                                             onClick={() => handleSelect(order)}
                                                         >
-                                                            <EditIcon className='size-5' />
+                                                            <View className='size-5' />
                                                         </button>
+                                                        {/* <Link
+                                                            href={`/admin/transaksi/edit/${order.id}`} // Sesuaikan dengan nama folder routing kamu
+                                                            className='main-button rounded-full! p-3! bg-amber-500 hover:bg-amber-600' // Sengaja beda warna biar admin nggak salah klik
+                                                            title="Edit Transaksi"
+                                                        >
+                                                            <Edit className='size-5' />
+                                                        </Link> */}
+
                                                     </TableCell>
                                                 </TableRow>
 
@@ -238,7 +246,7 @@ export default function TransaksiPage({ data }: { data: Transaksi[] }) {
                     <div className="relative w-full overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900">
                         <div className="flex px-6 py-3 bg-primary text-white justify-between items-center w-full border-gray-200 dark:border-white/5">
                             <div className="text-xl font-semibold ">
-                                {selectedNasabah ? 'Edit Nasabah' : 'Tambah Nasabah'}
+                                Detail Transaksi
                             </div>
                             <button
                                 onClick={closeModal}

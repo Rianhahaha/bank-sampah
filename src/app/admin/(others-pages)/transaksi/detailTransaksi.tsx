@@ -9,7 +9,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { DetailTransaksi } from "@/types";
-export default function DetailTransaksiModal({ id, total_harga }: { id: number, total_harga:number }) {
+import { Edit } from "lucide-react";
+import Link from "next/link";
+export default function DetailTransaksiModal({ id, total_harga }: { id: number, total_harga: number }) {
     const [data, setData] = useState<DetailTransaksi[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     useEffect(() => {
@@ -17,7 +19,7 @@ export default function DetailTransaksiModal({ id, total_harga }: { id: number, 
             try {
                 const result = await getDetailTransaksi(id);
                 setData(result);
-                 setLoading(false);
+                setLoading(false);
             }
             catch (error) {
                 console.error("Error fetching detail transaksi:", error);
@@ -25,7 +27,7 @@ export default function DetailTransaksiModal({ id, total_harga }: { id: number, 
         };
         if (id) {
             fetchData();
-           
+
         }
     }, [id]);
 
@@ -34,7 +36,7 @@ export default function DetailTransaksiModal({ id, total_harga }: { id: number, 
             <div>Memuat...</div>
         )
     }
-        
+
 
     return (
         <>
@@ -90,19 +92,27 @@ export default function DetailTransaksiModal({ id, total_harga }: { id: number, 
                                 {order.berat} {order.sampah.satuan}
                             </TableCell>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                {order.sampah.harga_per_satuan}
+                                Rp. {order.sampah.harga_per_satuan.toLocaleString('id-ID')}
                             </TableCell>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                {order.subtotal}
+                                Rp. {order.subtotal.toLocaleString('id-ID')}
                             </TableCell>
                         </TableRow>
 
                     ))}
                 </TableBody>
             </Table>
-            <div className="text-center">
+            <hr className="py-2" />
+            <div className="flex justify-between items-end gap-5 flex-wrap">
+                <div className="text-center py-3 px-5 border border-primary rounded-lg text-primary bg-primary/10 w-fit">
+                    Total Harga : Rp. {total_harga.toLocaleString('id-ID')}
+                </div>
 
-            Total Harga : {total_harga}
+                <Link href={`/admin/transaksi/edit/${id}`} className="main-button">
+                    <Edit />
+                    Edit Transaksi
+                </Link>
+
             </div>
 
 
