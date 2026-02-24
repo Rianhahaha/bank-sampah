@@ -5,48 +5,76 @@ import { revalidatePath } from 'next/cache'
 
 // action.ts
 
-export async function deleteTransaksi(transaksi_id: number, nasabah_id: number, total_harga: number) {
+// action.ts
+// action.ts
+export async function deleteTransaksi(transaksi_id: number) {
     const supabase = await createClient()
 
-    if (!transaksi_id || !nasabah_id) {
-        return { success: false, message: "Data tidak valid untuk dihapus." }
+    if (!transaksi_id) {
+        return { success: false, message: "ID Transaksi tidak valid." }
     }
 
     try {
-        // 1. Tarik kembali (revert) saldo nasabah
-        const { data: nasabahData } = await supabase
+        // --- 1. CARI TAHU INI TRANSAKSI SIAPA DAN BERAPA HARGANYA ---
+        const { data: trxLama, error: errTrx } = await supabase
+            .from('transaksi')
+            .select('nasabah_id, total_harga')
+            .eq('id', Number(transaksi_id))
+            .single()
+
+        if (errTrx || !trxLama) {
+            throw new Error(`Transaksi dengan ID ${transaksi_id} tidak ditemukan di database.`)
+        }
+
+        const nasabah_id = trxLama.nasabah_id
+        const total_harga = trxLama.total_harga
+
+        // --- 2. AMBIL SALDO NASABAH SAAT INI ---
+        const { data: nasabahData, error: errCari } = await supabase
             .from('nasabah')
-            .select('saldo')
-            .eq('id', nasabah_id)
+            .select('saldo, nama')
+            .eq('id', nasabah_id) 
             .single()
         
-        const saldoBaru = (nasabahData?.saldo || 0) - total_harga
+        if (errCari || !nasabahData) {
+            throw new Error(`Nasabah pemilik transaksi ini tidak ditemukan.`)
+        }
 
-        const { error: errSaldo } = await supabase
+        // --- 3. MATEMATIKA ANTI-BUG ---
+        const saldoLama = Number(nasabahData.saldo || 0)
+        const hargaRevert = Number(total_harga || 0)
+        const saldoBaru = saldoLama - hargaRevert
+
+        // --- 4. UPDATE SALDO NASABAH ---
+        const { data: checkUpdate, error: errSaldo } = await supabase
             .from('nasabah')
             .update({ saldo: saldoBaru })
             .eq('id', nasabah_id)
+            .select('id, saldo') 
+            .single() 
 
-        if (errSaldo) throw new Error("Gagal mengembalikan saldo nasabah.")
+        if (errSaldo || !checkUpdate) {
+            throw new Error("Gagal menyimpan saldo baru ke tabel nasabah.")
+        }
 
-        // 2. Hapus detail transaksi (Jaga-jaga kalau DB kamu belum pakai Cascade Delete)
-        await supabase.from('transaksi_detail').delete().eq('transaksi_id', transaksi_id)
+        // --- 5. EKSEKUSI HAPUS DATA TRANSAKSI ---
+        await supabase.from('transaksi_detail').delete().eq('transaksi_id', Number(transaksi_id))
 
-        // 3. Hapus transaksi utama
         const { error: errDelete } = await supabase
             .from('transaksi')
             .delete()
-            .eq('id', transaksi_id)
+            .eq('id', Number(transaksi_id))
 
-        if (errDelete) throw new Error("Gagal menghapus transaksi: " + errDelete.message)
+        if (errDelete) throw new Error("Gagal menghapus transaksi utama.")
 
-        // 4. Refresh halaman
+        // --- 6. REFRESH UI ---
         revalidatePath('/admin/transaksi')
         revalidatePath('/admin/nasabah')
 
-        return { success: true, message: "Transaksi berhasil dihapus & Saldo telah disesuaikan!" }
+        return { success: true, message: `Sukses! Saldo ${nasabahData.nama} dikembalikan jadi Rp ${checkUpdate.saldo.toLocaleString('id-ID')}` }
 
     } catch (error: any) {
+        console.error("[DEBUG FATAL ERROR]", error.message)
         return { success: false, message: error.message }
     }
 }

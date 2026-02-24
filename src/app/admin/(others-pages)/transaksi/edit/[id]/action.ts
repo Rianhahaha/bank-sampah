@@ -85,6 +85,8 @@ export async function updateTransaksi(transaksi_id: number, nasabah_id: number, 
     const saldoBaru = (nasabahBaru?.saldo || 0) + totalRupiahBaru
     
     const { error: errSaldoBaru } = await supabase.from('nasabah').update({ saldo: saldoBaru }).eq('id', nasabah_id)
+
+    // console.log("DEBUG: Update Transaksi Sukses. Revert Saldo:", revertSaldo, "Saldo Baru:", saldoBaru)
     
     if (errSaldoBaru) console.error("CRITICAL: Saldo baru gagal update", errSaldoBaru)
 

@@ -45,19 +45,12 @@ export default function TransaksiPage({ data }: { data: Transaksi[] }) {
     }
 
     // Eksekusi fungsi Hapus ke Server
-    const confirmDelete = () => {
+   const confirmDelete = () => {
         if (!selectedDeletedTransaksi) return;
 
         startTransition(async () => {
-            // Asumsi id nasabah ada di selectedDeletedTransaksi.nasabah_id atau dari object nasabah
-            const nasabahId = selectedDeletedTransaksi.id;
-            console.log("Attempting to delete transaksi with ID:", selectedDeletedTransaksi.id, "for nasabah ID:", nasabahId);
-
-            const result = await deleteTransaksi(
-                selectedDeletedTransaksi.id,
-                nasabahId,
-                selectedDeletedTransaksi.total_harga
-            );
+            // CUKUP KIRIM ID TRANSAKSI SAJA! Biar server yang ngurus sisanya
+            const result = await deleteTransaksi(selectedDeletedTransaksi.id);
 
             if (result.success) {
                 toast.success(result.message);
