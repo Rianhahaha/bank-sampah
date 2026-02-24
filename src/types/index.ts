@@ -32,6 +32,7 @@ export interface Transaksi {
     created_at: string;
     total_harga: number;
     nasabah: {
+        id: number;
         nama: string | null;
     }
     transaksi_detail?: {
