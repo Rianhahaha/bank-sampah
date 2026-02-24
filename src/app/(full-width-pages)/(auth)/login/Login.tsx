@@ -166,7 +166,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <h1 className="mb-2 font-normal text-white text-md text-center">
-                  Version -- commit : Added Edit Transaksi Nasabah
+                  Version -- commit : fixing recalculate saldo after delete
                 </h1>
               </div>
             </form>
